@@ -264,6 +264,10 @@ main {
   margin-bottom: 1rem;
 }
 
+#materialDetail {
+  margin-top: 1.25rem;
+}
+
 .material-detail__meta {
   color: var(--color-muted);
   font-size: 0.95rem;
@@ -337,6 +341,11 @@ main {
 .form__group label {
   font-weight: 600;
   font-size: 0.9rem;
+}
+
+.form__hint {
+  font-size: 0.8rem;
+  color: var(--color-muted);
 }
 
 .form__group input,

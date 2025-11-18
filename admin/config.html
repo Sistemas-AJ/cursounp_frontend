@@ -114,10 +114,12 @@
         <div class="panel__header">
           <h2>Material</h2>
           <p class="panel__hint">
-            Selecciona una sesión para vincular recursos externos.
+            Sube archivos por sesión, actualiza la metadata y gestiona tus
+            recursos sin duplicar peticiones.
           </p>
         </div>
         <form id="materialForm" class="form grid-form">
+          <input type="hidden" id="materialId" name="material_id" />
           <div class="form__group">
             <label for="materialSession">Sesión</label>
             <select id="materialSession" name="session_id" required>
@@ -134,18 +136,26 @@
             />
           </div>
           <div class="form__group">
-            <label for="materialExtension">Extensión</label>
-            <input type="text" id="materialExtension" name="extension" />
-          </div>
-          <div class="form__group">
-            <label for="materialPath">Ruta o URL</label>
-            <input type="url" id="materialPath" name="file_path" required />
+            <label for="materialFile">Archivo</label>
+            <input type="file" id="materialFile" name="file" required />
+            <small class="form__hint">PDF, imágenes o documentos</small>
           </div>
           <div class="form__actions">
             <button type="submit" class="button">Guardar material</button>
+            <button
+              type="button"
+              class="button button--ghost"
+              id="materialFormReset"
+            >
+              Cancelar
+            </button>
           </div>
         </form>
         <p id="materialMessage" class="message" aria-live="polite"></p>
+        <div id="materialList" class="stack"></div>
+        <div id="materialListEmpty" class="empty-state is-hidden">
+          <p>Selecciona una sesión para ver sus materiales.</p>
+        </div>
       </section>
 
       <section

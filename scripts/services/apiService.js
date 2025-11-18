@@ -44,13 +44,53 @@ export class ApiService {
     });
   }
 
-  async uploadMaterial(sessionId, payload) {
-    if (!sessionId && sessionId !== 0) throw new Error('Session ID requerido');
-    const { data } = await this.client.post(
-      `/sesiones/${sessionId}/materials`,
-      payload,
-    );
+  async createMaterial({ sessionId, displayName, file }) {
+    if (!sessionId && sessionId !== 0) {
+      throw new Error('Session ID requerido');
+    }
+    if (!file) {
+      throw new Error('Archivo requerido');
+    }
+    const formData = new FormData();
+    formData.append('session_id', sessionId);
+    formData.append('display_name', displayName);
+    formData.append('file', file);
+    const { data } = await this.client.post('/material', formData);
     return data;
+  }
+
+  async updateMaterial({ materialId, sessionId, displayName, file }) {
+    if (!materialId && materialId !== 0) {
+      throw new Error('Material ID requerido');
+    }
+    if (!sessionId && sessionId !== 0) {
+      throw new Error('Session ID requerido');
+    }
+    if (!file) {
+      throw new Error('Archivo requerido');
+    }
+    const formData = new FormData();
+    formData.append('material_id', materialId);
+    formData.append('session_id', sessionId);
+    formData.append('display_name', displayName);
+    formData.append('file', file);
+    const { data } = await this.client.put('/material', formData);
+    return data;
+  }
+
+  async deleteMaterial({ sessionId, materialId }) {
+    if (!sessionId && sessionId !== 0) {
+      throw new Error('Session ID requerido');
+    }
+    if (!materialId && materialId !== 0) {
+      throw new Error('Material ID requerido');
+    }
+    await this.client.delete('/material', {
+      params: {
+        session_id: sessionId,
+        material_id: materialId,
+      },
+    });
   }
 
   async getSessionMaterials(sessionId) {
