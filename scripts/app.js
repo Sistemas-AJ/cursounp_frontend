@@ -6,6 +6,14 @@ const sessionsList = document.getElementById('sessionsList');
 const refreshButton = document.getElementById('refreshSessions');
 const sessionsEmpty = document.getElementById('sessionsEmpty');
 const sessionsError = document.getElementById('sessionsError');
+const materialSessionsList = document.getElementById('materialSessionsList');
+const materialDetail = document.getElementById('materialDetail');
+const materialMessage = document.getElementById('materialMessage');
+const materialEmpty = document.getElementById('materialEmpty');
+const materialReload = document.getElementById('materialReload');
+
+const sessionMaterialsCache = new Map();
+const materialDownloadCache = new Map();
 
 function showPanel(targetId) {
   panels.forEach((panel) => {
@@ -65,6 +73,25 @@ function getScheduleLabel(session) {
     return 'Horario por definir';
   }
   return segments.join(' · ');
+}
+
+function formatFileSize(size) {
+  if (!size && size !== 0) return 'Sin tamaño';
+  const units = ['B', 'KB', 'MB', 'GB'];
+  let value = size;
+  let unitIndex = 0;
+  while (value >= 1024 && unitIndex < units.length - 1) {
+    value /= 1024;
+    unitIndex += 1;
+  }
+  return `${value.toFixed(value >= 10 ? 0 : 1)} ${units[unitIndex]}`;
+}
+
+function setMaterialMessage(message, status = 'info') {
+  if (!materialMessage) return;
+  materialMessage.textContent = message;
+  materialMessage.dataset.status = status;
+  materialMessage.hidden = !message;
 }
 
 function createSessionCard(session) {
@@ -143,6 +170,198 @@ function createSessionCard(session) {
   return card;
 }
 
+function renderMaterialSessionList(sessions) {
+  if (!materialSessionsList) return;
+  materialSessionsList.innerHTML = '';
+
+  if (!sessions.length) {
+    if (materialEmpty) materialEmpty.classList.remove('is-hidden');
+    hideMaterialDetail();
+    return;
+  }
+
+  if (materialEmpty) materialEmpty.classList.add('is-hidden');
+
+  sessions.forEach((session) => {
+    const item = document.createElement('div');
+    item.className = 'material-session';
+    item.role = 'listitem';
+
+    const info = document.createElement('div');
+    info.className = 'material-session__info';
+    const title = document.createElement('strong');
+    title.textContent = session.tema || 'Sesión sin título';
+    const meta = document.createElement('span');
+    meta.textContent = `${formatDate(session.fecha)} · ${getScheduleLabel(
+      session,
+    )}`;
+
+    info.appendChild(title);
+    info.appendChild(meta);
+
+    const action = document.createElement('button');
+    action.className = 'button';
+    action.textContent = 'Ver material';
+    action.dataset.sessionId = session.id;
+
+    item.appendChild(info);
+    item.appendChild(action);
+    materialSessionsList.appendChild(item);
+  });
+
+  const validIds = new Set(sessions.map((session) => String(session.id)));
+  sessionMaterialsCache.forEach((_, sessionId) => {
+    if (!validIds.has(String(sessionId))) {
+      sessionMaterialsCache.delete(sessionId);
+    }
+  });
+}
+
+function hideMaterialDetail() {
+  if (!materialDetail) return;
+  materialDetail.classList.add('is-hidden');
+  materialDetail.innerHTML = '';
+}
+
+function renderMaterialDetail(data) {
+  if (!materialDetail) return;
+  const session = data.session || {};
+  const materials = Array.isArray(data.materiales) ? data.materiales : [];
+
+  materialDetail.innerHTML = '';
+
+  const header = document.createElement('div');
+  header.className = 'material-detail__header';
+
+  const headerInfo = document.createElement('div');
+  const title = document.createElement('h3');
+  title.textContent = session.tema || 'Sesión sin título';
+  const detailMeta = document.createElement('p');
+  detailMeta.className = 'material-detail__meta';
+  detailMeta.textContent = `${formatDate(session.fecha)} · ${getScheduleLabel(
+    session,
+  )}`;
+
+  headerInfo.appendChild(title);
+  headerInfo.appendChild(detailMeta);
+
+  const closeButton = document.createElement('button');
+  closeButton.className = 'button button--ghost';
+  closeButton.textContent = 'Cerrar';
+  closeButton.dataset.action = 'close-detail';
+
+  header.appendChild(headerInfo);
+  header.appendChild(closeButton);
+
+  const list = document.createElement('div');
+  list.className = 'material-items';
+
+  if (!materials.length) {
+    const empty = document.createElement('p');
+    empty.className = 'material-badge';
+    empty.textContent = 'No hay materiales disponibles aún.';
+    list.appendChild(empty);
+  } else {
+    materials.forEach((material) => {
+      const item = document.createElement('div');
+      item.className = 'material-item';
+
+      const meta = document.createElement('div');
+      meta.className = 'material-item__meta';
+      const name = document.createElement('strong');
+      name.textContent = material.display_name || `Material ${material.id}`;
+      const extra = document.createElement('span');
+      extra.className = 'material-badge';
+
+      const typePill = document.createElement('span');
+      typePill.className = 'material-pill';
+      typePill.textContent = (material.extension || 'file').toUpperCase();
+
+      const sizeLabel = document.createElement('span');
+      sizeLabel.textContent = material.file_size
+        ? formatFileSize(material.file_size)
+        : material.content_type || '';
+
+      extra.appendChild(typePill);
+      if (sizeLabel.textContent) {
+        extra.appendChild(sizeLabel);
+      }
+
+      meta.appendChild(name);
+      meta.appendChild(extra);
+
+      const actions = document.createElement('div');
+      actions.className = 'material-item__actions';
+      const downloadButton = document.createElement('button');
+      downloadButton.className = 'button button--ghost';
+      downloadButton.textContent = 'Descargar';
+      downloadButton.dataset.materialId = material.id;
+      downloadButton.dataset.materialName =
+        material.display_name || `material-${material.id}`;
+
+      actions.appendChild(downloadButton);
+
+      item.appendChild(meta);
+      item.appendChild(actions);
+      list.appendChild(item);
+    });
+  }
+
+  materialDetail.appendChild(header);
+  materialDetail.appendChild(list);
+  materialDetail.classList.remove('is-hidden');
+}
+
+async function showSessionMaterials(sessionId) {
+  if (!sessionId) return;
+  setMaterialMessage('Cargando materiales...', 'info');
+  let cache = sessionMaterialsCache.get(sessionId);
+  if (!cache) {
+    try {
+      cache = await apiService.getSessionMaterials(sessionId);
+      sessionMaterialsCache.set(sessionId, cache);
+    } catch (error) {
+      console.error(error);
+      setMaterialMessage('No se pudo obtener el material.', 'error');
+      return;
+    }
+  }
+  renderMaterialDetail(cache);
+  setMaterialMessage('Material listo para descargar.', 'success');
+}
+
+async function downloadMaterialFile(materialId, fileName) {
+  if (!materialId) return;
+  setMaterialMessage('Preparando descarga...', 'info');
+  let cache = materialDownloadCache.get(materialId);
+  if (!cache) {
+    try {
+      const blob = await apiService.downloadMaterial(materialId);
+      const url = URL.createObjectURL(blob);
+      cache = { url, fileName };
+      materialDownloadCache.set(materialId, cache);
+    } catch (error) {
+      console.error(error);
+      setMaterialMessage('No se pudo descargar el archivo.', 'error');
+      return;
+    }
+  } else if (!cache.fileName && fileName) {
+    cache.fileName = fileName;
+  }
+
+  triggerDownload(cache.url, cache.fileName || fileName || 'material');
+  setMaterialMessage('Descarga lista.', 'success');
+}
+
+function triggerDownload(url, filename) {
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename || 'material';
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+}
+
 async function loadSessions() {
   sessionsError.classList.add('is-hidden');
   sessionsEmpty.classList.add('is-hidden');
@@ -152,6 +371,7 @@ async function loadSessions() {
 
   try {
     const sessions = await apiService.getSessions();
+    renderMaterialSessionList(sessions);
     if (sessions.length === 0) {
       sessionsEmpty.classList.remove('is-hidden');
       return;
@@ -169,5 +389,33 @@ async function loadSessions() {
 }
 
 refreshButton.addEventListener('click', loadSessions);
+if (materialReload) {
+  materialReload.addEventListener('click', loadSessions);
+}
+
+if (materialSessionsList) {
+  materialSessionsList.addEventListener('click', (event) => {
+    const button = event.target.closest('button[data-session-id]');
+    if (!button) return;
+    showSessionMaterials(button.dataset.sessionId);
+  });
+}
+
+if (materialDetail) {
+  materialDetail.addEventListener('click', (event) => {
+    const closeButton = event.target.closest('[data-action="close-detail"]');
+    if (closeButton) {
+      hideMaterialDetail();
+      return;
+    }
+    const downloadButton = event.target.closest('button[data-material-id]');
+    if (downloadButton) {
+      downloadMaterialFile(
+        downloadButton.dataset.materialId,
+        downloadButton.dataset.materialName,
+      );
+    }
+  });
+}
 
 loadSessions();

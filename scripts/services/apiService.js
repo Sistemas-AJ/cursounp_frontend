@@ -53,6 +53,23 @@ export class ApiService {
     return data;
   }
 
+  async getSessionMaterials(sessionId) {
+    if (!sessionId && sessionId !== 0) throw new Error('Session ID requerido');
+    const { data } = await this.client.get('/material', {
+      params: { session_id: sessionId },
+    });
+    return data;
+  }
+
+  async downloadMaterial(materialId) {
+    if (!materialId && materialId !== 0)
+      throw new Error('Material ID requerido');
+    const response = await this.client.get(`/material/${materialId}/archivo`, {
+      responseType: 'blob',
+    });
+    return response.data;
+  }
+
   async registerUser(payload) {
     const { data } = await this.client.post('/auth/register', payload);
     return data;

@@ -84,25 +84,22 @@
       </section>
 
       <section id="material" class="panel" aria-label="Material">
-        <div class="card">
-          <h2>Material de referencia</h2>
-          <p>
-            Los recursos aparecerán aquí una vez que estén vinculados a cada
-            sesión en el backend. Mientras tanto, puedes utilizar esta
-            sección para anotar enlaces importantes.
-          </p>
-          <ul class="list">
-            <li><a href="#" aria-disabled="true">Guía rápida (próximamente)</a></li>
-            <li>
-              <a href="#" aria-disabled="true"
-                >Checklist de preparación (próximamente)</a
-              >
-            </li>
-            <li>
-              <a href="#" aria-disabled="true">Casos de estudio (próximamente)</a>
-            </li>
-          </ul>
+        <div class="panel__header">
+          <h2>Material del curso</h2>
+          <button id="materialReload" class="button button--ghost">
+            Actualizar sesiones
+          </button>
         </div>
+        <p class="panel__hint">
+          Selecciona una sesión para obtener sus archivos. El contenido se
+          almacena localmente para evitar solicitudes repetidas.
+        </p>
+        <div id="materialSessionsList" class="stack" role="list"></div>
+        <div id="materialEmpty" class="empty-state is-hidden">
+          <p>Aún no hay sesiones con materiales registrados.</p>
+        </div>
+        <div id="materialDetail" class="card is-hidden"></div>
+        <p id="materialMessage" class="message" hidden></p>
       </section>
 
       <section id="acerca" class="panel" aria-label="Acerca">

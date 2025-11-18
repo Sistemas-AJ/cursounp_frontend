@@ -213,9 +213,10 @@ main {
 
 .session__title {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem;
+  justify-content: space-between;
+  width: 100%;
 }
 
 .session__teacher {
@@ -228,6 +229,88 @@ main {
 }
 
 .session__actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.material-session {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  background: var(--color-panel);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.material-session__info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.material-session__info span {
+  color: var(--color-muted);
+  font-size: 0.9rem;
+}
+
+.material-detail__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.material-detail__meta {
+  color: var(--color-muted);
+  font-size: 0.95rem;
+}
+
+.material-items {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.material-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.material-item:last-child {
+  border-bottom: none;
+}
+
+.material-item__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.material-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  color: var(--color-muted);
+}
+
+.material-pill {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+
+.material-item__actions {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
