@@ -11,7 +11,15 @@ const materialDetail = document.getElementById('materialDetail');
 const materialMessage = document.getElementById('materialMessage');
 const materialEmpty = document.getElementById('materialEmpty');
 const materialReload = document.getElementById('materialReload');
-
+let currentMaterialAnchor = null;
+const materialDetailHome =
+  materialDetail && materialDetail.parentElement
+    ? document.createElement('div')
+    : null;
+if (materialDetailHome) {
+  materialDetailHome.id = 'materialDetailHome';
+  materialDetail.parentElement.insertBefore(materialDetailHome, materialDetail);
+}
 const sessionMaterialsCache = new Map();
 const materialDownloadCache = new Map();
 
@@ -31,9 +39,20 @@ tabs.forEach((tab) => {
   });
 });
 
-function formatDate(value) {
-  if (!value) return 'Sin fecha';
+function parseDateValue(value) {
+  if (!value) return null;
+  if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    const [year, month, day] = value.split('-').map(Number);
+    return new Date(year, month - 1, day);
+  }
   const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+  return date;
+}
+
+function formatDate(value) {
+  const date = parseDateValue(value);
+  if (!date) return 'Sin fecha';
   return date.toLocaleDateString('es-PE', {
     year: 'numeric',
     month: 'long',
@@ -54,6 +73,25 @@ function formatTime(value) {
     hour: '2-digit',
     minute: '2-digit',
   });
+}
+
+function getSessionOrderValue(session = {}) {
+  const candidates = [session.orden, session.order, session.id];
+  for (const candidate of candidates) {
+    if (candidate || candidate === 0) {
+      const number = Number(candidate);
+      if (!Number.isNaN(number)) return number;
+    }
+  }
+  const date = parseDateValue(session.fecha);
+  if (date) return date.getTime();
+  return 0;
+}
+
+function sortSessionsAscending(sessions = []) {
+  return [...sessions].sort(
+    (a, b) => getSessionOrderValue(a) - getSessionOrderValue(b),
+  );
 }
 
 function getScheduleLabel(session) {
@@ -172,6 +210,9 @@ function createSessionCard(session) {
 
 function renderMaterialSessionList(sessions) {
   if (!materialSessionsList) return;
+  if (materialDetail && materialSessionsList.contains(materialDetail)) {
+    positionMaterialDetail(null);
+  }
   materialSessionsList.innerHTML = '';
 
   if (!sessions.length) {
@@ -221,6 +262,7 @@ function hideMaterialDetail() {
   if (!materialDetail) return;
   materialDetail.classList.add('is-hidden');
   materialDetail.innerHTML = '';
+  positionMaterialDetail(null);
 }
 
 function renderMaterialDetail(data) {
@@ -234,7 +276,7 @@ function renderMaterialDetail(data) {
   header.className = 'material-detail__header';
 
   const headerInfo = document.createElement('div');
-  const title = document.createElement('h3');
+  const title = document.createElement('h2');
   title.textContent = session.tema || 'Sesión sin título';
   const detailMeta = document.createElement('p');
   detailMeta.className = 'material-detail__meta';
@@ -312,7 +354,18 @@ function renderMaterialDetail(data) {
   materialDetail.classList.remove('is-hidden');
 }
 
-async function showSessionMaterials(sessionId) {
+function positionMaterialDetail(anchorElement) {
+  if (!materialDetail) return;
+  if (anchorElement) {
+    anchorElement.after(materialDetail);
+    currentMaterialAnchor = anchorElement;
+  } else if (materialDetailHome && materialDetailHome.parentElement) {
+    materialDetailHome.after(materialDetail);
+    currentMaterialAnchor = null;
+  }
+}
+
+async function showSessionMaterials(sessionId, anchorElement) {
   if (!sessionId) return;
   setMaterialMessage('Cargando materiales...', 'info');
   let cache = sessionMaterialsCache.get(sessionId);
@@ -326,8 +379,9 @@ async function showSessionMaterials(sessionId) {
       return;
     }
   }
+  positionMaterialDetail(anchorElement);
   renderMaterialDetail(cache);
-  setMaterialMessage('Material listo para descargar.', 'success');
+  setMaterialMessage('Recuerda que puedes descargar el material del curso', 'success');
 }
 
 async function downloadMaterialFile(materialId, fileName) {
@@ -371,12 +425,13 @@ async function loadSessions() {
 
   try {
     const sessions = await apiService.getSessions();
-    renderMaterialSessionList(sessions);
-    if (sessions.length === 0) {
+    const orderedSessions = sortSessionsAscending(sessions);
+    renderMaterialSessionList(orderedSessions);
+    if (orderedSessions.length === 0) {
       sessionsEmpty.classList.remove('is-hidden');
       return;
     }
-    sessions.forEach((session) => {
+    orderedSessions.forEach((session) => {
       sessionsList.appendChild(createSessionCard(session));
     });
   } catch (err) {
@@ -397,7 +452,8 @@ if (materialSessionsList) {
   materialSessionsList.addEventListener('click', (event) => {
     const button = event.target.closest('button[data-session-id]');
     if (!button) return;
-    showSessionMaterials(button.dataset.sessionId);
+    const sessionItem = button.closest('.material-session');
+    showSessionMaterials(button.dataset.sessionId, sessionItem);
   });
 }
 

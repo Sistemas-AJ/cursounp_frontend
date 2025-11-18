@@ -20,12 +20,27 @@
   <body>
     <header class="hero">
       <div class="hero__content">
-        <p class="hero__eyebrow">Curso UNP 2025</p>
-        <h1>Aprende, comparte y crece con la comunidad</h1>
-        <p class="hero__text">
-          Material actualizado, sesiones en vivo y recursos que impulsan tu
-          aprendizaje profesional.
-        </p>
+        
+        <div class="logos">
+          <img src="assets/unp.png" alt="Logo Universidad Nacional de Piura" />
+          <img src="assets/uminuto.png" alt="Logo Corporación Universitaria Minuto de Dios" />
+        </div>
+        <div class="hero__header">
+          
+          <div class="hero__heading">
+            <p class="hero__eyebrow">
+              Universidad Nacional de Piura | Corporación Universitaria Minuto de
+              Dios
+            </p>
+            <h1>Taller de Introducción a la Investigación y Comunicación Científica</h1>
+            <p class="hero__text">
+              Curso de naturaleza teórico-práctica, desarrollada bajo el modelo COIL
+              (Collaborative Online International Learning), conectando a estudiantes
+              de Perú y Colombia.
+            </p>
+          </div>
+          
+        </div>
         <nav class="tabs" aria-label="Navegación principal">
           <button class="tabs__item is-active" data-target="inicio">
             Inicio
@@ -40,29 +55,25 @@
     <main>
       <section id="inicio" class="panel is-visible" aria-label="Inicio">
         <div class="card card--accent">
-          <h2>Bienvenido</h2>
+          <h2>Bienvenido estimado docente</h2>
           <p>
-            Explora las sesiones programadas, descarga materiales oficiales y
-            mantente al día con las novedades del curso. Esta página está
-            lista para conectarse con tu API local o remota en cualquier
-            momento.
+            Al finalizar el curso-taller, usted comprenderá las fases teóricas de un proceso de investigación científica y podrá aplicar herramientas multimedia y de visualización de datos para comunicar y divulgar conceptos científicos de forma efectiva, en un entorno de colaboración internacional (Perú-Colombia).
           </p>
         </div>
         <div class="grid">
           <article class="card">
-            <h3>Sesiones en vivo</h3>
+            <h3>PROGRAMACIÓN DE CONTENIDOS </h3>
             <p>
-              Conoce horarios, docentes y temas de cada encuentro. Todo se
-              actualiza desde el backend en <code>localhost:9009</code>.
+              El curso se estructura en tres (3) sesiones síncronas obligatorias (vía Zoom/Meet), complementadas con trabajo autónomo de asesoría en equipos binacionales.
             </p>
           </article>
           <article class="card">
-            <h3>Material descargable</h3>
-            <p>Organiza recursos por sesión y mantenlos siempre accesibles.</p>
+            <h3>DESCARGA DEL MATERIAL</h3>
+            <p>Puede descargar y organizar recursos los de cada sesión y mantenerlos siempre disponibles.</p>
           </article>
           <article class="card">
-            <h3>Comunidad</h3>
-            <p>Comparte dudas, retos y logros para avanzar como equipo.</p>
+            <h3>COMUNIDAD</h3>
+            <p>Comparta dudas, retos y logros para avanzar como equipo.</p>
           </article>
         </div>
       </section>
@@ -84,6 +95,16 @@
       </section>
 
       <section id="material" class="panel" aria-label="Material">
+        <div class="panel__header">
+          <h2>Sílabus del curso</h2>
+          <a
+            class="button button--ghost"
+            href="assets/Silabus%20Taller%20de%20Introducción%20a%20la%20Investigación.pdf"
+            download
+          >
+            Descargar sílabus
+          </a>
+        </div>
         <div class="panel__header">
           <h2>Material del curso</h2>
           <button id="materialReload" class="button button--ghost">
@@ -124,7 +145,7 @@
     </main>
 
     <footer class="footer">
-      <p>© 2025 Curso UNP · Plataforma interna</p>
+      <p>© 2025 Universidad Nacional de Piura  · Plataforma interna</p>
     </footer>
   </body>
 </html>

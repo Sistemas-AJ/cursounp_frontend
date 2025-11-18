@@ -43,6 +43,28 @@ body {
   margin: 0 auto;
 }
 
+.hero__header {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.hero__heading {
+  flex: 1 1 320px;
+}
+
+.logos {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex: 0 0 auto;
+  margin-bottom: 10px;
+}
+
+
+
 .hero__eyebrow {
   text-transform: uppercase;
   letter-spacing: 0.3em;
@@ -58,7 +80,7 @@ h3 {
 }
 
 .hero__text {
-  max-width: 48ch;
+  max-width: 70ch;
 }
 
 main {
