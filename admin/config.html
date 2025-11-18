@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Config · Curso UNP</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/axios@1.6.8/dist/axios.min.js"
+      defer
+    ></script>
+    <script src="../scripts/config.js" type="module" defer></script>
+  </head>
+  <body class="admin">
+    <header class="hero hero--compact">
+      <div class="hero__content">
+        <p class="hero__eyebrow">Panel interno</p>
+        <h1>Configuración del curso</h1>
+        <p class="hero__text">
+          Administra sesiones, sube materiales y controla accesos desde un solo
+          lugar. Todas las operaciones utilizan la misma API configurable.
+        </p>
+        <div class="admin__actions">
+          <a class="button button--ghost" href="../index.html"
+            >← Volver al sitio</a
+          >
+        </div>
+        <nav class="tabs tabs--light" aria-label="Panel administrativo">
+          <button class="tabs__item is-active" data-config-tab="config-sesiones">
+            Sesiones
+          </button>
+          <button class="tabs__item" data-config-tab="config-material">
+            Material
+          </button>
+          <button class="tabs__item" data-config-tab="config-acceso">
+            Registro &amp; Login
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="admin-main">
+      <section
+        id="config-sesiones"
+        class="panel config-panel is-visible"
+        aria-label="Gestión de sesiones"
+      >
+        <div class="panel__header">
+          <h2>Sesiones</h2>
+          <button id="reloadSessions" class="button button--ghost">
+            Recargar
+          </button>
+        </div>
+        <form id="sessionForm" class="form grid-form">
+          <input type="hidden" name="sessionId" id="sessionId" />
+          <div class="form__group">
+            <label for="sessionFecha">Fecha</label>
+            <input type="date" id="sessionFecha" name="fecha" required />
+          </div>
+          <div class="form__group">
+            <label for="sessionHoraInicio">Hora inicio</label>
+            <input type="time" id="sessionHoraInicio" name="hora_inicio" />
+          </div>
+          <div class="form__group">
+            <label for="sessionHoraFin">Hora fin</label>
+            <input type="time" id="sessionHoraFin" name="hora_fin" />
+          </div>
+          <div class="form__group">
+            <label for="sessionHorario">Horario</label>
+            <input type="text" id="sessionHorario" name="horario" />
+          </div>
+          <div class="form__group">
+            <label for="sessionTema">Tema</label>
+            <input type="text" id="sessionTema" name="tema" required />
+          </div>
+          <div class="form__group">
+            <label for="sessionDocente">Docente</label>
+            <input type="text" id="sessionDocente" name="docente" />
+          </div>
+          <div class="form__group">
+            <label for="sessionLugar">Lugar</label>
+            <input type="text" id="sessionLugar" name="lugar" />
+          </div>
+          <div class="form__group">
+            <label for="sessionLink">Link</label>
+            <input type="url" id="sessionLink" name="link" />
+          </div>
+          <div class="form__actions">
+            <button type="submit" class="button">Guardar sesión</button>
+            <button
+              type="button"
+              class="button button--ghost"
+              id="sessionFormReset"
+            >
+              Limpiar
+            </button>
+          </div>
+        </form>
+        <p id="sessionFormMessage" class="message" aria-live="polite"></p>
+        <div id="sessionCards" class="stack"></div>
+      </section>
+
+      <section
+        id="config-material"
+        class="panel config-panel"
+        aria-label="Materiales"
+      >
+        <div class="panel__header">
+          <h2>Material</h2>
+          <p class="panel__hint">
+            Selecciona una sesión para vincular recursos externos.
+          </p>
+        </div>
+        <form id="materialForm" class="form grid-form">
+          <div class="form__group">
+            <label for="materialSession">Sesión</label>
+            <select id="materialSession" name="session_id" required>
+              <option value="">Selecciona una sesión</option>
+            </select>
+          </div>
+          <div class="form__group">
+            <label for="materialDisplay">Nombre visible</label>
+            <input
+              type="text"
+              id="materialDisplay"
+              name="display_name"
+              required
+            />
+          </div>
+          <div class="form__group">
+            <label for="materialExtension">Extensión</label>
+            <input type="text" id="materialExtension" name="extension" />
+          </div>
+          <div class="form__group">
+            <label for="materialPath">Ruta o URL</label>
+            <input type="url" id="materialPath" name="file_path" required />
+          </div>
+          <div class="form__actions">
+            <button type="submit" class="button">Guardar material</button>
+          </div>
+        </form>
+        <p id="materialMessage" class="message" aria-live="polite"></p>
+      </section>
+
+      <section
+        id="config-acceso"
+        class="panel config-panel"
+        aria-label="Registro y acceso"
+      >
+        <div class="panel__header">
+          <h2>Usuarios y tokens</h2>
+          <p class="panel__hint" id="tokenStatus">
+            No hay sesión activa todavía.
+          </p>
+        </div>
+        <div class="grid grid--two">
+          <div class="card">
+            <h3>Registro</h3>
+            <form id="registerForm" class="form">
+              <div class="form__group">
+                <label for="registerUsername">Usuario</label>
+                <input
+                  type="text"
+                  id="registerUsername"
+                  name="username"
+                  required
+                />
+              </div>
+              <div class="form__group">
+                <label for="registerFullName">Nombre completo</label>
+                <input
+                  type="text"
+                  id="registerFullName"
+                  name="full_name"
+                  required
+                />
+              </div>
+              <div class="form__group">
+                <label for="registerPassword">Contraseña</label>
+                <input
+                  type="password"
+                  id="registerPassword"
+                  name="password"
+                  required
+                />
+              </div>
+              <div class="form__actions">
+                <button type="submit" class="button">Registrarse</button>
+              </div>
+            </form>
+            <p id="registerMessage" class="message" aria-live="polite"></p>
+          </div>
+
+          <div class="card">
+            <h3>Iniciar sesión</h3>
+            <form id="loginForm" class="form">
+              <div class="form__group">
+                <label for="loginUsername">Usuario</label>
+                <input
+                  type="text"
+                  id="loginUsername"
+                  name="username"
+                  required
+                />
+              </div>
+              <div class="form__group">
+                <label for="loginPassword">Contraseña</label>
+                <input
+                  type="password"
+                  id="loginPassword"
+                  name="password"
+                  required
+                />
+              </div>
+              <div class="form__actions">
+                <button type="submit" class="button">Obtener token</button>
+                <button
+                  type="button"
+                  class="button button--ghost"
+                  id="logoutButton"
+                >
+                  Cerrar sesión
+                </button>
+              </div>
+            </form>
+            <p id="loginMessage" class="message" aria-live="polite"></p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>© 2025 Curso UNP · Panel administrativo</p>
+    </footer>
+  </body>
+</html>

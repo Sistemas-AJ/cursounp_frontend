@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Curso UNP</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/axios@1.6.8/dist/axios.min.js"
+      defer
+    ></script>
+    <script src="scripts/app.js" type="module" defer></script>
+  </head>
+  <body>
+    <header class="hero">
+      <div class="hero__content">
+        <p class="hero__eyebrow">Curso UNP 2025</p>
+        <h1>Aprende, comparte y crece con la comunidad</h1>
+        <p class="hero__text">
+          Material actualizado, sesiones en vivo y recursos que impulsan tu
+          aprendizaje profesional.
+        </p>
+        <nav class="tabs" aria-label="Navegación principal">
+          <button class="tabs__item is-active" data-target="inicio">
+            Inicio
+          </button>
+          <button class="tabs__item" data-target="sesiones">Sesiones</button>
+          <button class="tabs__item" data-target="material">Material</button>
+          <button class="tabs__item" data-target="acerca">Acerca</button>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section id="inicio" class="panel is-visible" aria-label="Inicio">
+        <div class="card card--accent">
+          <h2>Bienvenido</h2>
+          <p>
+            Explora las sesiones programadas, descarga materiales oficiales y
+            mantente al día con las novedades del curso. Esta página está
+            lista para conectarse con tu API local o remota en cualquier
+            momento.
+          </p>
+        </div>
+        <div class="grid">
+          <article class="card">
+            <h3>Sesiones en vivo</h3>
+            <p>
+              Conoce horarios, docentes y temas de cada encuentro. Todo se
+              actualiza desde el backend en <code>localhost:9009</code>.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Material descargable</h3>
+            <p>Organiza recursos por sesión y mantenlos siempre accesibles.</p>
+          </article>
+          <article class="card">
+            <h3>Comunidad</h3>
+            <p>Comparte dudas, retos y logros para avanzar como equipo.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="sesiones" class="panel" aria-label="Sesiones">
+        <div class="panel__header">
+          <h2>Sesiones programadas</h2>
+          <button id="refreshSessions" class="button button--ghost">
+            Actualizar
+          </button>
+        </div>
+        <div id="sessionsList" class="stack" role="list"></div>
+        <div id="sessionsEmpty" class="empty-state is-hidden">
+          <p>No hay sesiones disponibles todavía.</p>
+        </div>
+        <div id="sessionsError" class="empty-state is-hidden">
+          <p>Ocurrió un error al cargar las sesiones. Intenta nuevamente.</p>
+        </div>
+      </section>
+
+      <section id="material" class="panel" aria-label="Material">
+        <div class="card">
+          <h2>Material de referencia</h2>
+          <p>
+            Los recursos aparecerán aquí una vez que estén vinculados a cada
+            sesión en el backend. Mientras tanto, puedes utilizar esta
+            sección para anotar enlaces importantes.
+          </p>
+          <ul class="list">
+            <li><a href="#" aria-disabled="true">Guía rápida (próximamente)</a></li>
+            <li>
+              <a href="#" aria-disabled="true"
+                >Checklist de preparación (próximamente)</a
+              >
+            </li>
+            <li>
+              <a href="#" aria-disabled="true">Casos de estudio (próximamente)</a>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="acerca" class="panel" aria-label="Acerca">
+        <div class="card">
+          <h2>Sobre el programa</h2>
+          <p>
+            Este frontend ligero está construido con HTML, CSS y JavaScript
+            modular para facilitar futuras iteraciones. La integración a
+            través de un servicio API dedicado permite cambiar la URL sin
+            tocar las vistas.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Pensado para escalar</h3>
+          <ul class="list">
+            <li>Arquitectura simple y clara.</li>
+            <li>Capas separadas para UI y datos.</li>
+            <li>Diseño responsivo listo para móviles.</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>© 2025 Curso UNP · Plataforma interna</p>
+    </footer>
+  </body>
+</html>
