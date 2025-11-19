@@ -26,6 +26,8 @@ if (materialDetailHome) {
 }
 const sessionMaterialsCache = new Map();
 const materialDownloadCache = new Map();
+let sessionsCache = [];
+let tasksCache = [];
 
 function showPanel(targetId) {
   panels.forEach((panel) => {
@@ -212,10 +214,25 @@ function createSessionCard(session) {
   return card;
 }
 
+function getSessionLabelById(sessionId) {
+  if (sessionId === null || sessionId === undefined) {
+    return 'Sesión no asignada';
+  }
+  const match = sessionsCache.find(
+    (session) => String(session.id) === String(sessionId),
+  );
+  if (!match) {
+    return `Sesión ${sessionId}`;
+  }
+  return `${formatDate(match.fecha)} · ${match.tema || 'Sin tema'}`;
+}
+
 function createTaskCard(task) {
   const card = document.createElement('article');
   card.className = 'card task';
   card.role = 'listitem';
+
+  const sessionLabel = getSessionLabelById(task.session_id);
 
   const title = document.createElement('h3');
   title.textContent = task.titulo || 'Tarea sin título';
@@ -223,10 +240,13 @@ function createTaskCard(task) {
   const detail = document.createElement('p');
   detail.textContent = task.detalle || 'Sin instrucciones adicionales.';
 
+  const sessionBadge = document.createElement('span');
+  sessionBadge.className = 'task__session';
+  sessionBadge.textContent = sessionLabel;
+
   const meta = document.createElement('div');
   meta.className = 'task__meta';
   meta.innerHTML = `
-    <span>Sesión: ${task.session_id ?? 'N/A'}</span>
     <span>Fecha límite de presentación: ${formatDate(task.fecha_limite)}</span>
     <span>Hora límite: ${formatTime(task.hora_limite)}</span>
   `;
@@ -243,6 +263,7 @@ function createTaskCard(task) {
   contact.append('.');
 
   card.appendChild(title);
+  card.appendChild(sessionBadge);
   card.appendChild(detail);
   card.appendChild(meta);
   card.appendChild(contact);
@@ -297,6 +318,19 @@ function renderMaterialSessionList(sessions) {
     if (!validIds.has(String(sessionId))) {
       sessionMaterialsCache.delete(sessionId);
     }
+  });
+}
+
+function renderTasksList(tasks = tasksCache) {
+  if (!tasksList) return;
+  tasksList.innerHTML = '';
+  if (!tasks || !tasks.length) {
+    tasksEmpty?.classList.remove('is-hidden');
+    return;
+  }
+  tasksEmpty?.classList.add('is-hidden');
+  tasks.forEach((task) => {
+    tasksList.appendChild(createTaskCard(task));
   });
 }
 
@@ -468,7 +502,9 @@ async function loadSessions() {
   try {
     const sessions = await apiService.getSessions();
     const orderedSessions = sortSessionsAscending(sessions);
+    sessionsCache = orderedSessions;
     renderMaterialSessionList(orderedSessions);
+    renderTasksList();
     if (orderedSessions.length === 0) {
       sessionsEmpty.classList.remove('is-hidden');
       return;
@@ -497,13 +533,8 @@ async function loadTasks() {
 
   try {
     const tasks = await apiService.getTasks();
-    if (!tasks.length) {
-      tasksEmpty?.classList.remove('is-hidden');
-      return;
-    }
-    tasks.forEach((task) => {
-      tasksList.appendChild(createTaskCard(task));
-    });
+    tasksCache = tasks;
+    renderTasksList(tasksCache);
   } catch (error) {
     console.error(error);
     tasksError?.classList.remove('is-hidden');

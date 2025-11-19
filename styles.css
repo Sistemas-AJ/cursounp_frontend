@@ -235,6 +235,19 @@ main {
   font-size: 0.9rem;
 }
 
+.task__session {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  border-radius: 999px;
+  padding: 0.2rem 0.75rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
+
 .task__contact a {
   color: var(--color-primary);
   font-weight: 600;
