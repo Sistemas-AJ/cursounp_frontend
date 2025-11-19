@@ -5,4 +5,6 @@ export const adminState = {
   currentMaterialSession: '',
   materialEditingId: null,
   materialsCache: new Map(),
+  tasks: [],
+  taskEditingId: null,
 };

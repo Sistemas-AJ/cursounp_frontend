@@ -11,6 +11,10 @@ const materialDetail = document.getElementById('materialDetail');
 const materialMessage = document.getElementById('materialMessage');
 const materialEmpty = document.getElementById('materialEmpty');
 const materialReload = document.getElementById('materialReload');
+const tasksList = document.getElementById('tasksList');
+const tasksEmpty = document.getElementById('tasksEmpty');
+const tasksError = document.getElementById('tasksError');
+const tasksReload = document.getElementById('tasksReload');
 let currentMaterialAnchor = null;
 const materialDetailHome =
   materialDetail && materialDetail.parentElement
@@ -204,6 +208,44 @@ function createSessionCard(session) {
     card.appendChild(materialsTitle);
     card.appendChild(list);
   }
+
+  return card;
+}
+
+function createTaskCard(task) {
+  const card = document.createElement('article');
+  card.className = 'card task';
+  card.role = 'listitem';
+
+  const title = document.createElement('h3');
+  title.textContent = task.titulo || 'Tarea sin título';
+
+  const detail = document.createElement('p');
+  detail.textContent = task.detalle || 'Sin instrucciones adicionales.';
+
+  const meta = document.createElement('div');
+  meta.className = 'task__meta';
+  meta.innerHTML = `
+    <span>Sesión: ${task.session_id ?? 'N/A'}</span>
+    <span>Fecha límite de presentación: ${formatDate(task.fecha_limite)}</span>
+    <span>Hora límite: ${formatTime(task.hora_limite)}</span>
+  `;
+
+  const contact = document.createElement('p');
+  contact.className = 'task__contact';
+  contact.textContent = 'Puedes enviar tu respuesta al ';
+  const link = document.createElement('a');
+  link.href = 'https://mail.google.com/mail/?view=cm&fs=1&to=ajurador@unp.edu.pe';
+  link.target = '_blank';
+  link.rel = 'noopener noreferrer';
+  link.textContent = 'Correo Dr. Adolfo Jurado';
+  contact.appendChild(link);
+  contact.append('.');
+
+  card.appendChild(title);
+  card.appendChild(detail);
+  card.appendChild(meta);
+  card.appendChild(contact);
 
   return card;
 }
@@ -443,9 +485,42 @@ async function loadSessions() {
   }
 }
 
+async function loadTasks() {
+  if (!tasksList) return;
+  tasksError?.classList.add('is-hidden');
+  tasksEmpty?.classList.add('is-hidden');
+  tasksList.innerHTML = '';
+  if (tasksReload) {
+    tasksReload.disabled = true;
+    tasksReload.textContent = 'Cargando...';
+  }
+
+  try {
+    const tasks = await apiService.getTasks();
+    if (!tasks.length) {
+      tasksEmpty?.classList.remove('is-hidden');
+      return;
+    }
+    tasks.forEach((task) => {
+      tasksList.appendChild(createTaskCard(task));
+    });
+  } catch (error) {
+    console.error(error);
+    tasksError?.classList.remove('is-hidden');
+  } finally {
+    if (tasksReload) {
+      tasksReload.disabled = false;
+      tasksReload.textContent = 'Actualizar tareas';
+    }
+  }
+}
+
 refreshButton.addEventListener('click', loadSessions);
 if (materialReload) {
   materialReload.addEventListener('click', loadSessions);
+}
+if (tasksReload) {
+  tasksReload.addEventListener('click', loadTasks);
 }
 
 if (materialSessionsList) {
@@ -475,3 +550,4 @@ if (materialDetail) {
 }
 
 loadSessions();
+loadTasks();

@@ -38,6 +38,9 @@
           <button class="tabs__item" data-config-tab="config-material">
             Material
           </button>
+          <button class="tabs__item" data-config-tab="config-tareas">
+            Tareas
+          </button>
           <button class="tabs__item" data-config-tab="config-acceso">
             Registro &amp; Login
           </button>
@@ -155,6 +158,58 @@
         <div id="materialList" class="stack"></div>
         <div id="materialListEmpty" class="empty-state is-hidden">
           <p>Selecciona una sesión para ver sus materiales.</p>
+        </div>
+      </section>
+
+      <section
+        id="config-tareas"
+        class="panel config-panel"
+        aria-label="Gestión de tareas"
+      >
+        <div class="panel__header">
+          <h2>Tareas</h2>
+          <button id="reloadTasks" class="button button--ghost">Recargar</button>
+        </div>
+        <form id="taskForm" class="form grid-form">
+          <input type="hidden" id="taskId" name="task_id" />
+          <div class="form__group">
+            <label for="taskSession">Sesión</label>
+            <select id="taskSession" name="session_id" required>
+              <option value="">Selecciona una sesión</option>
+            </select>
+          </div>
+          <div class="form__group">
+            <label for="taskTitle">Título</label>
+            <input type="text" id="taskTitle" name="titulo" required />
+          </div>
+          <div class="form__group">
+            <label for="taskDetail">Detalle</label>
+            <textarea
+              id="taskDetail"
+              name="detalle"
+              rows="3"
+              placeholder="Describe la actividad y recursos necesarios"
+            ></textarea>
+          </div>
+          <div class="form__group">
+            <label for="taskDeadlineDate">Fecha límite</label>
+            <input type="date" id="taskDeadlineDate" name="fecha_limite" required />
+          </div>
+          <div class="form__group">
+            <label for="taskDeadlineTime">Hora límite</label>
+            <input type="time" id="taskDeadlineTime" name="hora_limite" required />
+          </div>
+          <div class="form__actions">
+            <button type="submit" class="button">Guardar tarea</button>
+            <button type="button" class="button button--ghost" id="taskFormReset">
+              Limpiar
+            </button>
+          </div>
+        </form>
+        <p id="taskFormMessage" class="message" aria-live="polite"></p>
+        <div id="taskList" class="stack"></div>
+        <div id="taskListEmpty" class="empty-state is-hidden">
+          <p>Aún no hay tareas registradas.</p>
         </div>
       </section>
 

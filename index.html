@@ -16,6 +16,7 @@
       defer
     ></script>
     <script src="scripts/app.js" type="module" defer></script>
+    <link rel="icon" href="assets/unp.png" type="image/png">
   </head>
   <body>
     <header class="hero">
@@ -47,6 +48,7 @@
           </button>
           <button class="tabs__item" data-target="sesiones">Sesiones</button>
           <button class="tabs__item" data-target="material">Material</button>
+          <button class="tabs__item" data-target="tareas">Tareas</button>
           <button class="tabs__item" data-target="acerca">Acerca</button>
         </nav>
       </div>
@@ -123,22 +125,69 @@
         <p id="materialMessage" class="message" hidden></p>
       </section>
 
+      <section id="tareas" class="panel" aria-label="Tareas">
+        <div class="panel__header">
+          <h2>Tareas del curso</h2>
+          <button id="tasksReload" class="button button--ghost">
+            Actualizar tareas
+          </button>
+        </div>
+        <p class="panel__hint">
+          Mantente al día con los entregables. Aquí encontrarás las tareas vigentes,
+          sus fechas y horas límite.
+        </p>
+        <div id="tasksList" class="stack" role="list"></div>
+        <div id="tasksEmpty" class="empty-state is-hidden">
+          <p>Aún no hay tareas registradas.</p>
+        </div>
+        <div id="tasksError" class="empty-state is-hidden">
+          <p>Ocurrió un error al cargar las tareas. Intenta nuevamente.</p>
+        </div>
+      </section>
+
       <section id="acerca" class="panel" aria-label="Acerca">
         <div class="card">
-          <h2>Sobre el programa</h2>
+          <h2>Dr. JURADO ROSAS ADOLFO ANTENOR</h2>
           <p>
-            Este frontend ligero está construido con HTML, CSS y JavaScript
-            modular para facilitar futuras iteraciones. La integración a
-            través de un servicio API dedicado permite cambiar la URL sin
-            tocar las vistas.
+            Contador Público Colegiado de profesión, cuento con el grado de
+            Magister en Administración con mención en Gerencia Empresarial y
+            actualmente estoy cursando el Doctorado en Administración con la
+            misma mención. Tengo experiencia en cursos de investigación,
+            tributación, administración e informática aplicada a la contabilidad
+            y dirijo una empresa de asesoría.
           </p>
         </div>
         <div class="card">
-          <h3>Pensado para escalar</h3>
+          <h3>Universidad Nacional de Piura</h3>
+          <p>
+            Somos una Institución de Educación Superior Universitaria para la
+            formación técnica, científica y humanística de profesionales que
+            coadyuven al desarrollo integral.
+          </p>
+        </div>
+        <div class="card ">
+          <h3>Corporación Universitaria Minuto de Dios</h3>
+          <p>
+            El Sistema Universitario UNIMINUTO, inspirado en el Evangelio, el
+            pensamiento social de la Iglesia, la espiritualidad eudista y el
+            carisma del Minuto de Dios, tiene como propósito impulsar una
+            educación transformadora.
+          </p>
           <ul class="list">
-            <li>Arquitectura simple y clara.</li>
-            <li>Capas separadas para UI y datos.</li>
-            <li>Diseño responsivo listo para móviles.</li>
+            <li>
+              Ofrecer educación superior de alta calidad, pertinente y con
+              opción preferencial para quienes no tienen oportunidades de
+              acceder a ella mediante un modelo innovador, integral y flexible.
+            </li>
+            <li>
+              Formar excelentes seres humanos, profesionales competentes,
+              éticamente orientados y comprometidos con la transformación social
+              y el desarrollo sostenible.
+            </li>
+            <li>
+              Contribuir, con nuestro compromiso y testimonio, a la construcción
+              de una sociedad fraterna, justa, reconciliada y en paz.
+            </li>
           </ul>
         </div>
       </section>

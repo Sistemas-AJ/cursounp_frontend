@@ -7,7 +7,9 @@ export function setMessage(element, message, status = 'info') {
 
 export function toIsoTime(value) {
   if (!value) return null;
-  return `${value}:00Z`;
+  if (/^\d{2}:\d{2}:\d{2}$/.test(value)) return value;
+  if (/^\d{2}:\d{2}$/.test(value)) return `${value}:00`;
+  return value;
 }
 
 export function fromIsoTime(value) {

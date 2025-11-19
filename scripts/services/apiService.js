@@ -101,6 +101,31 @@ export class ApiService {
     return data;
   }
 
+  async getTasks() {
+    const { data } = await this.client.get('/tareas');
+    return Array.isArray(data) ? data : [];
+  }
+
+  async createTask(payload) {
+    const { data } = await this.client.post('/tareas', payload);
+    return data;
+  }
+
+  async updateTask(id, payload) {
+    if (!id && id !== 0) throw new Error('Task ID requerido');
+    const { data } = await this.client.put('/tareas', payload, {
+      params: { task_id: id },
+    });
+    return data;
+  }
+
+  async deleteTask(id) {
+    if (!id && id !== 0) throw new Error('Task ID requerido');
+    await this.client.delete('/tareas', {
+      params: { task_id: id },
+    });
+  }
+
   async downloadMaterial(materialId) {
     if (!materialId && materialId !== 0)
       throw new Error('Material ID requerido');
