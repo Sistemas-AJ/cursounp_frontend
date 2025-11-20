@@ -29,6 +29,65 @@ const materialDownloadCache = new Map();
 let sessionsCache = [];
 let tasksCache = [];
 
+const ICONS = {
+  layer: `
+    <svg class="icon" viewBox="0 0 24 24">
+      <path d="M12 2 3 7l9 5 9-5-9-5Z" fill="currentColor"/>
+      <path d="M3 12.5 12 18l9-5.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M3 16.5 12 22l9-5.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  `,
+  calendar: `
+    <svg class="icon" viewBox="0 0 24 24">
+      <path d="M6 3.5a1 1 0 0 1 1 1V6h10V4.5a1 1 0 1 1 2 0V6h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h1V4.5a1 1 0 0 1 1-1Z" fill="currentColor"/>
+      <path d="M4 10h16" stroke="#fff" stroke-width="1.4"/>
+    </svg>
+  `,
+  clock: `
+    <svg class="icon" viewBox="0 0 24 24">
+      <path d="M12 3a9 9 0 1 1 0 18 9 9 0 0 1 0-18Z" fill="currentColor"/>
+      <path d="M12 7v5l3 2" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  `,
+  location: `
+    <svg class="icon" viewBox="0 0 24 24">
+      <path d="M12 2c-3.3 0-6 2.65-6 5.92C6 12 12 20 12 20s6-8 6-12.08C18 4.65 15.3 2 12 2Zm0 8.25a2.25 2.25 0 1 1 0-4.5 2.25 2.25 0 0 1 0 4.5Z" fill="currentColor"/>
+    </svg>
+  `,
+  link: `
+    <svg class="icon" viewBox="0 0 24 24">
+      <path d="M14.5 4.75a4.25 4.25 0 0 1 0 8.5h-2v-2h2a2.25 2.25 0 0 0 0-4.5h-3.5v-2Zm-5 6.5h-2a2.25 2.25 0 0 0 0 4.5H11v2H7.5a4.25 4.25 0 1 1 0-8.5h2Z" fill="currentColor"/>
+      <path d="M9 11h6v2H9Z" fill="currentColor"/>
+    </svg>
+  `,
+};
+
+function createIcon(name, className = '') {
+  const svg = ICONS[name];
+  if (!svg) return null;
+  const template = document.createElement('template');
+  template.innerHTML = svg.trim();
+  const icon = template.content.firstElementChild;
+  if (!icon) return null;
+  icon.classList.add('icon');
+  if (className) {
+    className
+      .split(' ')
+      .filter(Boolean)
+      .forEach((cls) => icon.classList.add(cls));
+  }
+  icon.setAttribute('aria-hidden', 'true');
+  return icon;
+}
+
+function createMetaItem(iconName, text) {
+  const span = document.createElement('span');
+  const icon = createIcon(iconName, 'session__meta-icon');
+  if (icon) span.appendChild(icon);
+  span.appendChild(document.createTextNode(text));
+  return span;
+}
+
 function showPanel(targetId) {
   panels.forEach((panel) => {
     panel.classList.toggle('is-visible', panel.id === targetId);
@@ -150,7 +209,13 @@ function createSessionCard(session) {
   titleWrapper.className = 'session__title';
 
   const title = document.createElement('h3');
-  title.textContent = session.tema || 'Sesión sin título';
+  const titleIcon = createIcon('layer', 'session__title-icon');
+  title.appendChild(
+    document.createTextNode(session.tema || 'Sesión sin título'),
+  );
+  if (titleIcon) {
+    title.prepend(titleIcon);
+  }
 
   const teacher = document.createElement('span');
   teacher.className = 'session__teacher';
@@ -164,11 +229,11 @@ function createSessionCard(session) {
 
   const meta = document.createElement('div');
   meta.className = 'session__meta';
-  meta.innerHTML = `
-    <span>${formatDate(session.fecha)}</span>
-    <span>${getScheduleLabel(session)}</span>
-    <span>${session.lugar || 'Lugar por definir'}</span>
-  `;
+  meta.append(
+    createMetaItem('calendar', formatDate(session.fecha)),
+    createMetaItem('clock', getScheduleLabel(session)),
+    createMetaItem('location', session.lugar || 'Lugar por definir'),
+  );
 
   const linkWrapper = document.createElement('p');
   if (session.link) {
@@ -176,7 +241,10 @@ function createSessionCard(session) {
     anchor.href = session.link;
     anchor.target = '_blank';
     anchor.rel = 'noopener noreferrer';
-    anchor.textContent = 'Ir a la clase';
+    anchor.className = 'session__link';
+    const linkIcon = createIcon('link');
+    if (linkIcon) anchor.appendChild(linkIcon);
+    anchor.append(' Ir a la clase');
     linkWrapper.appendChild(anchor);
   } else {
     linkWrapper.textContent = 'Link no disponible';
